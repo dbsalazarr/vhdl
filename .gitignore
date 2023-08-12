@@ -1,0 +1,7 @@
+*
+# Ignorar todos los tipos de archivos, excepto:
+!.gitignore
+!*.vhd
+!/*
+!/*.vhd
+!*.txt
