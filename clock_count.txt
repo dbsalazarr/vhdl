@@ -35,7 +35,7 @@ begin
 			clk <= clk_state;
 		end if;
 	end process;
-	
+	-- Este proceso no llega a ejecutar algo
 --	per_second : process(clk_state)
 --	begin
 --		clk <= clk_state;
