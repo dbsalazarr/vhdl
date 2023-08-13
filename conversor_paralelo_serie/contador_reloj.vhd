@@ -1,5 +1,6 @@
- library ieee;
+library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
 entity contador_reloj is
@@ -10,24 +11,24 @@ generic(
 port(
 	clk_in : in std_logic;
 	contador : out std_logic_vector(n-1 downto 0)
+	
 );
 end entity;
 
 architecture arch of contador_reloj is
-constant max_count : integer := (2**n - 1);
-signal count : integer range 0 to max_count;
+signal count : std_logic_vector(n-1 downto 0);
 
 begin
 	gen_clock : process(clk_in, count)
 	begin
-		if rising_edge(clk_in) then
-			if count <= max_count then
+		if rising_edge(clk_in) and clk_in = '1' then
+			if count <= std_logic_vector(to_unsigned(2**n-1, n)) then
 				count <= count + 1;
 			else 
---				clk_state <= not clk_state;
-				count  <= 0;
+				count  <= std_logic_vector(to_unsigned(0, n));
 			end if;
-			contador <= std_logic_vector(to_unsigned(count, n));
+			contador <= count;
+--			std_logic_vector(to_unsigned(count, n));
 		end if;
 	end process;
 end architecture;

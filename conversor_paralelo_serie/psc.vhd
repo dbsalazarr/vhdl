@@ -11,7 +11,6 @@ port(
 	enable : in std_logic;
 	clk : in std_logic;
 	datos_paralelo : in std_logic_vector(7 downto 0);
---	datos_serie : out std_logic_vector(7 downto 0);
 	datos_serie : out std_logic;
 	contador : out std_logic_vector(n-1 downto 0)
 );
@@ -38,11 +37,15 @@ port(
 );
 end component;
 
-signal aux_selector : std_logic_vector(2 downto 0);
+signal aux_selector : std_logic_vector(2 downto 0) := "000";
 begin
 	C1 : contador_reloj generic map(3) port map(clk, aux_selector);
---	M1 : mux8a1 port map(enable, datos_paralelo, aux_selector, datos_serie( to_integer(unsigned(aux_selector)) ));
-M1 : mux8a1 port map(enable, datos_paralelo, aux_selector, datos_serie);
+	M1 : mux8a1 port map(enable, datos_paralelo, aux_selector, datos_serie);
 	contador <= aux_selector;
 	
 end architecture;
+
+
+
+
+
