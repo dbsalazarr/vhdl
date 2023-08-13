@@ -22,7 +22,7 @@ signal clk_state : std_logic;
 begin
 	gen_clock : process(clk_in, clk_state, count)
 	begin
-		if clk_in'event and clk_in = '1' then
+		if rising_edge(clk_in) then
 			if count <= max_count then
 				clk_state <= '0';
 				count <= count + 1;
