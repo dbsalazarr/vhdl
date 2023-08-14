@@ -31,20 +31,27 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity lcd_user_logic is
 	port (
+		-- IN
 		clk          : in  std_logic;
-		rst          : in  std_logic;
-		lcd_e        : out std_logic;
-		lcd_rs       : out std_logic;
-		lcd_rw       : out std_logic;
-		lcd_db       : out std_logic_vector(7 downto 0));
+		reset : in std_logic;
+		lcd_enable : in std_logic;
+		lcd_bus : in std_logic_vector(9 downto 0);
+		
+		-- OUTS
+		busy : out std_logic;
+		rw, rs, e : out std_logic;
+		lcd_data : out std_logic_vector(7 downto 0);
+		lcd_on : out std_logic;
+		lcd_blon : out std_logic
+	);
 		
 end entity lcd_user_logic;
 
 architecture Behavioral of lcd_user_logic is
 
 	COMPONENT lcd_controller IS
-	  PORT(
-		 clk : in std_logic; -- System clock
+	port(
+		clk : in std_logic; -- System clock
 		reset_n : in std_logic; -- active low reinitialize lcd
 		lcd_enable : in std_logic; -- latches data into lcd controller
 		lcd_bus : in std_logic_vector(9 downto 0); -- data and control signals
@@ -54,24 +61,13 @@ architecture Behavioral of lcd_user_logic is
 		lcd_data : out std_logic_vector(7 downto 0); -- data signals for lcd
 		lcd_on : out std_logic; -- LCD Power ON/OFF
 		lcd_blon : out std_logic -- LCD Back Light ON/OFF
+	);
 	END COMPONENT;
-	
-	-- These lines can be configured to be input from anything. 
-	-- 8 bits per character
-	signal top_line : std_logic_vector(127 downto 0) := x"4d617975722773204650474120202020"; -- Translates to Mayur's FPGA
-	signal bottom_line : std_logic_vector(127 downto 0) := x"5445535420666f72204c434420202020";
 
 begin
 
 LCD: lcd_controller port map(
-reset_n => rst,
-	e => lcd_e,
-	rs => lcd_rs,
-	rw => lcd_rw,
-	lcd_data => lcd_db,
-	line1_buffer => top_line,
-	line2_buffer => bottom_line 	clk => clk,
-	
+	clk, 
 );
 
 end Behavioral;
