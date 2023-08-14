@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- COPYRIGHT 2019 Jes�s Eduardo Mendez Rosales
+-- COPYRIGHT 2019 Jes�s Eduardo M�ndez Rosales
 --This program is free software: you can redistribute it and/or modify
 --it under the terms of the GNU General Public License as published by
 --the Free Software Foundation, either version 3 of the License, or
@@ -14,9 +14,9 @@
 --along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
 --
---							LIBRERÍA LCD
+--							LIBRER�A LCD
 --
--- Descripción: Con �sta librer�a podr�s implementar c�digos para una LCD 16x2 de manera
+-- Descripci�n: Con �sta librer�a podr�s implementar c�digos para una LCD 16x2 de manera
 -- f�cil y r�pida, con todas las ventajas de utilizar una FPGA.
 --
 -- Caracter�sticas:
@@ -186,7 +186,8 @@ PORT(CLK: IN STD_LOGIC;
 	  RS 		  : OUT STD_LOGIC;							--
 	  RW		  : OUT STD_LOGIC;							--
 	  ENA 	  : OUT STD_LOGIC;							--
-	  DATA_LCD : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)   --
+	  DATA_LCD : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);   --
+	  LCD_ON	  : IN  STD_LOGIC := '1' 
 -----------------------------------------------------
 -----------------------------------------------------
 	  
@@ -195,7 +196,7 @@ PORT(CLK: IN STD_LOGIC;
 --------------ABAJO ESCRIBE TUS PUERTOS--------------------	
 	 	
 -----------------------------------------------------------
------------------------------------------------------------
+---------------------------------------N--------------------
 
 	  );
 
@@ -204,11 +205,11 @@ end LIB_LCD_INTESC_REVD;
 architecture Behavioral of LIB_LCD_INTESC_REVD is
 
 
-CONSTANT NUM_INSTRUCCIONES : INTEGER := 12; 	--INDICAR EL NÚMERO DE INSTRUCCIONES PARA LA LCD
+CONSTANT NUM_INSTRUCCIONES : INTEGER := 16; 	--INDICAR EL NUMERO DE INSTRUCCIONES PARA LA LCD
 
 
 --------------------------------------------------------------------------------
--------------------------SE�ALES DE LA LCD (NO BORRAR)--------------------------
+-------------------------SEÑALES DE LA LCD (NO BORRAR)--------------------------
 																										--
 component PROCESADOR_LCD_REVD is																--
 																										--
@@ -262,11 +263,14 @@ signal dir_mem 		  : integer range 0 to NUM_INSTRUCCIONES := 0;				--
 
 
 --------------------------------------------------------------------------------
----------------------------AGREGA TUS SEÑALES AQUÍ------------------------------
+---------------------------AGREGA TUS SEÑALES AQUI------------------------------
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+CONSTANT delay_fin : integer := 24_999_999;
 
+signal conta_delay : integer range 0 to delay_fin;
+signal unidades, decenas : integer range 0 to 9 := 0;
 
 begin
 
@@ -291,18 +295,54 @@ VECTOR_MEM <= INST(DIR_MEM);											 --
 
 
 -------------------------------------------------------------------
----------------ESCRIBE TU C�DIGO PARA LA LCD-----------------------
+---------------ESCRIBE TU CODIGO PARA LA LCD-----------------------
 
 
 -------------------------------------------------------------------
 -------------------------------------------------------------------
+INST(0) <= LCD_INI("00"); -- Inicializar el LCD
+INST(1) <= CHAR(MC);
+INST(2) <= CHAR(O);
+INST(3) <= CHAR(N);
+INST(4) <= CHAR(T);
+INST(5) <= CHAR(A);
+INST(6) <= CHAR(D);
+INST(7) <= CHAR(O);
+INST(8) <= CHAR(R);
+INST(9) <= CHAR_ASCII(x"3A");
 
+INST(10) <= BUCLE_INI(1);
+INST(11) <= POS(2, 4);
+INST(12) <= INT_NUM(decenas);
+
+INST(13) <= POS(2, 5);
+INST(14) <= INT_NUM(unidades);
+
+INST(15) <= BUCLE_FIN(1);
+INST(16) <= CODIGO_FIN(1);
 
 
 
 -------------------------------------------------------------------
---------------------ESCRIBE TU CÓDIGO DE VHDL----------------------
-
+--------------------ESCRIBE TU CODIGO DE VHDL----------------------
+process(CLK)
+begin
+	if rising_edge(CLK) then
+		conta_delay <= conta_delay + 1;
+		
+		if conta_delay = delay_fin then
+			conta_delay <= 0;
+			unidades <= unidades + 1;
+			if unidades = 9 then
+				unidades <= 0;
+				decenas <= decenas + 1;
+				if decenas = 9 then 
+					decenas <= 0;
+				end if;
+			end if;
+		end if;
+	end if;
+end process;
 
 -------------------------------------------------------------------
 -------------------------------------------------------------------
