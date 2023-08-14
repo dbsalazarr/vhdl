@@ -9,7 +9,7 @@ generic(
 );
 
 port(
-	clk_in : in std_logic;
+	clk_in, reset : in std_logic;
 	contador : out std_logic_vector(n-1 downto 0)
 	
 );
@@ -21,14 +21,19 @@ signal count : std_logic_vector(n-1 downto 0);
 begin
 	gen_clock : process(clk_in, count)
 	begin
-		if rising_edge(clk_in) and clk_in = '1' then
-			if count <= std_logic_vector(to_unsigned(2**n-1, n)) then
-				count <= count + 1;
-			else 
-				count  <= std_logic_vector(to_unsigned(0, n));
+		if reset = '0' then
+			if rising_edge(clk_in) and clk_in = '1' then
+				if count <= std_logic_vector(to_unsigned(2**n-1, n)) then
+					count <= count + 1;
+				else 
+					count  <= std_logic_vector(to_unsigned(0, n));
+				end if;
 			end if;
-			contador <= count;
---			std_logic_vector(to_unsigned(count, n));
+		else
+			count <= std_logic_vector(to_unsigned(0, n));
 		end if;
 	end process;
+	contador <= count;
 end architecture;
+
+
